@@ -1,0 +1,72 @@
+query ProductId($handle: String!, $country: CountryCode, $language: LanguageCode) @inContext(country: $country, language: $language) {
+    product(handle: $handle) {
+        id
+    }
+}
+
+query ProductWithRecommendations($id: ID!, $count: Int, $country: CountryCode, $language: LanguageCode) @inContext(country: $country, language: $language) {
+    shop {
+        refundPolicy {
+            body
+            handle
+        }
+        shippingPolicy {
+            body
+            handle
+        }
+    }
+    product(id: $id) {
+        id
+        title
+        vendor
+        description
+        seo {
+            description
+            title
+        }
+        media(first: 7) {
+            nodes {
+                ...MediaImage
+            }
+        }
+        variants(first: 100) {
+            nodes {
+                id
+                availableForSale
+                selectedOptions {
+                    name
+                    value
+                }
+                image {
+                    id
+                    url
+                    altText
+                    width
+                    height
+                }
+                priceV2 {
+                    amount
+                    currencyCode
+                }
+                compareAtPriceV2 {
+                    amount
+                    currencyCode
+                }
+                sku
+                title
+                unitPrice {
+                    amount
+                    currencyCode
+                }
+            }
+        }
+    }
+    additional: products(first: $count, sortKey: BEST_SELLING) {
+        nodes {
+            ...ProductCard
+        }
+    }
+    recommended: productRecommendations(productId: $id) {
+        ...ProductCard
+    }
+}

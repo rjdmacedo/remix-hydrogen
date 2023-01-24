@@ -1,0 +1,9 @@
+mutation CustomerUpdate($customer: CustomerUpdateInput!, $customerAccessToken: String!) {
+    customerUpdate(customer: $customer, customerAccessToken: $customerAccessToken) {
+        customerUserErrors {
+            code
+            field
+            message
+        }
+    }
+}

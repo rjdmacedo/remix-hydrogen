@@ -23,8 +23,8 @@ app.use((req, res, next) => {
   // /clean-urls/ -> /clean-urls
   if (req.path.endsWith("/") && req.path.length > 1) {
     const query = req.url.slice(req.path.length);
-    const safepath = req.path.slice(0, -1).replace(/\/+/g, "/");
-    res.redirect(301, safepath + query);
+    const safePath = req.path.slice(0, -1).replace(/\/+/g, "/");
+    res.redirect(301, safePath + query);
     return;
   }
   next();
@@ -84,8 +84,8 @@ app.all(
     : (...args) => {
         purgeRequireCache();
         const requestHandler = createRequestHandler({
-          build: require(BUILD_DIR),
           mode: MODE,
+          build: require(BUILD_DIR),
         });
         return requestHandler(...args);
       }

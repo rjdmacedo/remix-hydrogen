@@ -1,0 +1,26 @@
+fragment ProductCard on Product {
+    id
+    title
+    handle
+    publishedAt
+    availableForSale
+    variants(first: 1) {
+        nodes {
+            id
+            image {
+                url
+                altText
+                width
+                height
+            }
+            priceV2 {
+                amount
+                currencyCode
+            }
+            compareAtPriceV2 {
+                amount
+                currencyCode
+            }
+        }
+    }
+}

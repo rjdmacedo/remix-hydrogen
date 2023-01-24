@@ -1,0 +1,24 @@
+query AllProducts(
+    $pageBy: Int!
+    $cursor: String
+    $country: CountryCode
+    $language: LanguageCode
+    $filters: [ProductFilter!]!
+    $collectionName: String!
+) @inContext(country: $country, language: $language) {
+    collection(handle: $collectionName) {
+        products(first: $pageBy, after: $cursor, filters: $filters) {
+            nodes {
+                ...ProductCard
+            }
+            filters {
+                ...Filters
+            }
+            pageInfo {
+                endCursor
+                hasNextPage
+                startCursor
+            }
+        }
+    }
+}

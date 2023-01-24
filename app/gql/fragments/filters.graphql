@@ -1,0 +1,11 @@
+fragment Filters on Filter {
+    id
+    type
+    label
+    values {
+        id
+        label
+        input
+        count
+    }
+}

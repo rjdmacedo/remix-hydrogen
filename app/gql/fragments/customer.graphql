@@ -1,0 +1,59 @@
+fragment Customer on Customer {
+    phone
+    email
+    lastName
+    firstName
+    acceptsMarketing
+    orders(first: 250, sortKey: PROCESSED_AT, reverse: true) {
+        edges {
+            node {
+                id
+                orderNumber
+                processedAt
+                financialStatus
+                fulfillmentStatus
+                currentTotalPrice {
+                    amount
+                    currencyCode
+                }
+                lineItems(first: 2) {
+                    edges {
+                        node {
+                            variant {
+                                image {
+                                    url
+                                    altText
+                                    height
+                                    width
+                                }
+                            }
+                            title
+                        }
+                    }
+                }
+            }
+        }
+    }
+    addresses(first: 6) {
+        edges {
+            node {
+                id
+                formatted
+                firstName
+                lastName
+                company
+                address1
+                address2
+                country
+                province
+                city
+                zip
+                phone
+            }
+        }
+    }
+    defaultAddress {
+        id
+        formatted
+    }
+}

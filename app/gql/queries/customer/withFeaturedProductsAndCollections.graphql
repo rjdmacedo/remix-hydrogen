@@ -1,0 +1,27 @@
+query CustomerDetailsWithFeaturedProductsAndCollections(
+    $country: CountryCode
+    $language: LanguageCode
+    $customerAccessToken: String!
+) @inContext(country: $country, language: $language) {
+    customer(customerAccessToken: $customerAccessToken) {
+        ...Customer
+    }
+    featuredProducts: products(first: 12) {
+        nodes {
+            ...ProductCard
+        }
+    }
+    featuredCollections: collections(first: 3, sortKey: UPDATED_AT) {
+        nodes {
+            id
+            title
+            handle
+            image {
+                altText
+                width
+                height
+                url
+            }
+        }
+    }
+}

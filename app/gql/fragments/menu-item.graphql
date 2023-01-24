@@ -1,0 +1,8 @@
+fragment MenuItem on MenuItem {
+    id
+    url
+    tags
+    type
+    title
+    resourceId
+}

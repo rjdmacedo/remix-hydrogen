@@ -1,0 +1,23 @@
+query AppHeaderAndFooterMenu($language: LanguageCode, $headerMenuHandle: String!, $footerMenuHandle: String!) @inContext(language: $language) {
+    shop {
+        name
+    }
+    headerMenu: menu(handle: $headerMenuHandle) {
+        id
+        items {
+            ...MenuItem
+            items {
+                ...MenuItem
+            }
+        }
+    }
+    footerMenu: menu(handle: $footerMenuHandle) {
+        id
+        items {
+            ...MenuItem
+            items {
+                ...MenuItem
+            }
+        }
+    }
+}

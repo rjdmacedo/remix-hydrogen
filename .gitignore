@@ -3,9 +3,11 @@ node_modules
 /build
 /public/build
 .env
+.idea
 
 /cypress/screenshots
 /cypress/videos
 /postgres-data
 
+/app/generated/*
 /app/styles/tailwind.css
