@@ -54,7 +54,10 @@ export async function action({ request }: ActionArgs) {
   );
 
   if (registerErrorMessage) {
-    return json({ errors: { email: registerErrorMessage ?? "Unknown error", password: null } }, { status: 401 });
+    return json(
+      { errors: { email: registerErrorMessage.message ?? "Unknown error", password: null } },
+      { status: 401 }
+    );
   }
 
   const loginData = await client.request({
@@ -74,7 +77,7 @@ export async function action({ request }: ActionArgs) {
   );
 
   if (loginErrorMessage) {
-    return json({ errors: { email: loginErrorMessage ?? "Unknown error", password: null } }, { status: 401 });
+    return json({ errors: { email: loginErrorMessage.message ?? "Unknown error", password: null } }, { status: 401 });
   }
 
   const { accessToken } = loginData?.customerAccessTokenCreate?.customerAccessToken || {};

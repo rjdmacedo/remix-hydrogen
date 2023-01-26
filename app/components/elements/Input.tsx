@@ -10,19 +10,19 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       type,
       color,
       label,
-      value,
       shadow,
       bordered = true,
       className,
       fullWidth,
       dataTheme,
       placeholder,
+      defaultValue,
       borderOffset,
       ...props
     },
     ref
   ): JSX.Element => {
-    const classes = clsx("input dark:border-neutral-content dark:shadow-none", className, {
+    const classes = clsx("input dark:border-neutral-content dark:shadow-none focus:outline-none", className, {
       [`input-${size}`]: size,
       [`input-${color}`]: color,
       [`focus:outline-offset-0`]: !borderOffset,
@@ -31,20 +31,20 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       "input-bordered": bordered,
     });
 
-    const Component = () => (
+    const input = (
       <input
         {...props}
         ref={ref}
         type={type}
-        value={value}
         className={classes}
         data-theme={dataTheme}
         placeholder={placeholder}
+        defaultValue={defaultValue}
       />
     );
 
     if (!label) {
-      return <Component />;
+      return input;
     }
 
     const _label =
@@ -63,7 +63,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             <span className="label-text-alt">{_label.position.includes("right") && _label.value}</span>
           </label>
         )}
-        <Component />
+        {input}
         {_label.position?.includes("bottom") && (
           <label className="label" htmlFor={props?.id}>
             <span className="label-text-alt">{_label.position.includes("left") && _label.value}</span>

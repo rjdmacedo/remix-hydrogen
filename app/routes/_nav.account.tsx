@@ -7,12 +7,12 @@ import { flattenConnection } from "@shopify/storefront-kit-react";
 import client from "~/api/index.server";
 import { Button } from "~/components/elements";
 import { PageHeader } from "~/components/global";
+import { updateAccount } from "~/api/account.server";
 import { getCountryCode } from "~/utilities";
-import { getApiErrorMessage } from "~/lib";
 import { logout, requireCustomerAccessToken } from "~/session.server";
 import { AccountDetails, AccountOrderHistory } from "~/components/account";
 import type { MailingAddressConnection, OrderConnection } from "~/gql/types";
-import { CustomerDetailsWithFeaturedProductsAndCollectionsDocument, CustomerUpdateDocument } from "~/gql/types";
+import { CustomerDetailsWithFeaturedProductsAndCollectionsDocument } from "~/gql/types";
 
 export async function loader({ request }: LoaderArgs) {
   const customerAccessToken = await requireCustomerAccessToken(request);
@@ -41,35 +41,29 @@ export async function loader({ request }: LoaderArgs) {
 export async function action({ request }: LoaderArgs) {
   const customerAccessToken = await requireCustomerAccessToken(request);
 
-  if (!customerAccessToken) return new Response(null, { status: 401 });
+  const formData = await request.formData();
+  const { _action, ...values } = Object.fromEntries(formData);
 
-  const form = await request.formData();
-  const firstName = form.get("firstname");
-  const lastName = form.get("lastname");
-  const phone = form.get("phone");
-  const email = form.get("email");
-  const newPw = form.get("newPassword");
-
-  const customer: Customer = {};
-  if (email) customer.email = String(email);
-  if (phone) customer.phone = String(phone);
-  if (newPw) customer.password = String(newPw);
-  if (lastName) customer.lastName = String(lastName);
-  if (firstName) customer.firstName = String(firstName);
-
-  const data = await client.request({
-    document: CustomerUpdateDocument,
-    variables: {
-      customer,
+  if (_action === "update") {
+    const { error } = await updateAccount({
       customerAccessToken,
-    },
+      customer: {
+        email: values.email ? String(values.email) : undefined,
+        phone: values.phone ? String(values.phone) : undefined,
+        password: values.newPw ? String(values.newPw) : undefined,
+        lastName: values.lastName ? String(values.lastName) : undefined,
+        firstName: values.firstName ? String(values.firstName) : undefined,
+      },
+    });
+
+    return json({
+      error,
+    });
+  }
+
+  return json({
+    error: null,
   });
-
-  const error = getApiErrorMessage("customerUpdate", data, data.customerUpdate?.customerUserErrors);
-
-  if (error) return json({ errors: error }, { status: 400 });
-
-  return json(null, { status: 200 });
 }
 
 export default function AccountPage() {

@@ -2,7 +2,7 @@ import type React from "react";
 
 // @ts-expect-error types not available
 import typographicBase from "typographic-base";
-import { MenuItemType } from "~/gql/types";
+import { Maybe, MenuItemType } from "~/gql/types";
 import type { Menu, MoneyV2, MenuItem, CustomerUserError } from "~/gql/types";
 
 export function missingClass(string?: string, prefix?: string) {
@@ -183,9 +183,9 @@ export function getApiErrorMessage(
   field: string,
   data?: Record<string, any> | any,
   errors?: readonly CustomerUserError[]
-) {
+): Maybe<Pick<CustomerUserError, "code" | "field" | "message">> {
   if (errors?.length) {
-    return errors[0].message ?? errors[0];
+    return errors[0];
   }
   if (data?.[field]?.customerUserErrors?.length) {
     return data[field].customerUserErrors[0].message;

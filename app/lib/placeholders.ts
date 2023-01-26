@@ -41,7 +41,7 @@ const PLACEHOLDERS = {
       },
       height: "full",
       top: true,
-      loading: "eager",
+      reloading: "eager",
     },
     // secondaryHero
     {
@@ -189,15 +189,9 @@ export function getHeroPlaceholder(heroes: any[]) {
 
     // prioritize metafield data if available, else the hero values
     // otherwise the placeholder values
-    const byLine =
-      hero?.byLine || hero?.descriptionHtml
-        ? { value: hero.descriptionHtml }
-        : placeholder.byline;
+    const byLine = hero?.byLine || hero?.descriptionHtml ? { value: hero.descriptionHtml } : placeholder.byline;
 
-    const heading =
-      hero?.heading || hero?.title
-        ? { value: hero.title }
-        : placeholder.heading;
+    const heading = hero?.heading || hero?.title ? { value: hero.title } : placeholder.heading;
 
     // merge hero placeholder with hero data
     return {

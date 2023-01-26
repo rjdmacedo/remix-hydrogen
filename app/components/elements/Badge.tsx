@@ -6,8 +6,8 @@ export const Badge = forwardRef<HTMLDivElement, BadgeProps>(
   ({ children, variant, size, color, responsive, dataTheme, className, ...props }, ref) => {
     const classes = clsx("badge", className, {
       [`badge-${size}`]: size,
-      [`badge-${variant}`]: variant,
       [`badge-${color}`]: color,
+      [`badge-${variant}`]: variant,
       "badge-xs md:badge-sm lg:badge-md xl:badge-lg": responsive,
     });
 

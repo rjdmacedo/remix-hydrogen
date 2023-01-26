@@ -6,7 +6,7 @@ import { Fragment, cloneElement, isValidElement } from "react";
 import type { CountryCode } from "~/gql/types";
 
 export const isNavigation = (navigation: Navigation) => ({
-  loading: navigation.state === "loading" && navigation.formData == null,
+  reloading: navigation.state === "loading" && navigation.formData == null,
   reloading:
     navigation.state === "loading" &&
     navigation.formData != null &&
