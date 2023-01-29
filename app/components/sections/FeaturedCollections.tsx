@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "@remix-run/react";
+import { Link } from "~/components/global";
 import { Image } from "@shopify/storefront-kit-react";
 
 import { Grid, Heading, Section } from "~/components/elements";

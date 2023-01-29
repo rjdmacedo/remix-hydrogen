@@ -2,22 +2,12 @@ import bcrypt from "bcryptjs";
 import type { Password, User } from "@prisma/client";
 
 import { prisma } from "~/db.server";
-import client from "~/api/index.server";
-import { CustomerDetailsWithFeaturedProductsAndCollectionsDocument } from "~/gql/types";
+import { getCustomer } from "~/api/customer.server";
 
 export type { User } from "@prisma/client";
 
 export async function getUserByAccessToken(customerAccessToken: string) {
-  return client.request({
-    document: CustomerDetailsWithFeaturedProductsAndCollectionsDocument,
-    variables: {
-      customerAccessToken,
-    },
-  });
-}
-
-export async function getUserByEmail(email: User["email"]) {
-  return prisma.user.findUnique({ where: { email } });
+  return getCustomer({ customerAccessToken });
 }
 
 export async function createUser(email: User["email"], password: string) {

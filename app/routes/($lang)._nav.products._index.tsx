@@ -10,16 +10,14 @@ import { getCountryCode } from "~/utilities";
 import type { Collection } from "~/gql/types";
 import { AllProductsDocument } from "~/gql/types";
 import { FILTERABLE_COLLECTION_NAME, PAGINATION_SIZE } from "~/lib/const";
+import { getAllProducts } from "~/api/products.server";
 
 export async function loader({ request }: LoaderArgs) {
-  const data = await client.request({
-    document: AllProductsDocument,
-    variables: {
-      pageBy: PAGINATION_SIZE,
-      filters: [],
-      country: getCountryCode(request.url),
-      collectionName: FILTERABLE_COLLECTION_NAME,
-    },
+  const data = await getAllProducts({
+    pageBy: PAGINATION_SIZE,
+    filters: [],
+    country: getCountryCode(request),
+    collectionName: FILTERABLE_COLLECTION_NAME,
   });
 
   return json(data);

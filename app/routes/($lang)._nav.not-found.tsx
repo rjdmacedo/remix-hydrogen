@@ -4,24 +4,20 @@ import { useLoaderData } from "@remix-run/react";
 import { flattenConnection } from "@shopify/storefront-kit-react";
 import type { LoaderArgs, MetaFunction } from "@remix-run/node";
 
-import client from "~/api/index.server";
 import { PageHeader } from "~/components/global";
 import { Text, Button } from "~/components/elements";
 import { getCountryCode } from "~/utilities";
 import { ProductSwimlane, FeaturedCollections } from "~/components/sections";
-import { FeaturedCollectionsAndProductsDocument } from "~/gql/types";
 import type { CollectionConnection, ProductConnection } from "~/gql/types";
+import { getFeaturedProductsAndCollections } from "~/api/products.server";
 
 export const meta: MetaFunction = () => ({
   title: "Couldn't find anything",
 });
 
 export async function loader({ request }: LoaderArgs) {
-  const data = await client.request({
-    document: FeaturedCollectionsAndProductsDocument,
-    variables: {
-      country: getCountryCode(request.url),
-    },
+  const data = await getFeaturedProductsAndCollections({
+    country: getCountryCode(request),
   });
 
   return json(data);

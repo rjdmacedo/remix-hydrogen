@@ -1,3 +1,13 @@
+query Customer(
+    $country: CountryCode
+    $language: LanguageCode
+    $customerAccessToken: String!
+) @inContext(country: $country, language: $language) {
+    customer(customerAccessToken: $customerAccessToken) {
+        ...Customer
+    }
+}
+
 query CustomerDetailsWithFeaturedProductsAndCollections(
     $country: CountryCode
     $language: LanguageCode

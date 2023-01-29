@@ -1,15 +1,16 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
-import type { LayoutQuery, Menu } from "~/gql/types";
-import { CountryCode } from "~/gql/types";
-import { parseMenu } from "~/lib";
+
 import { isHome } from "~/utilities";
-import { Header } from "~/components/global/Header";
-import { Footer } from "~/components/global/Footer";
-import { Link } from "@remix-run/react";
+import { parseMenu } from "~/lib";
+import { Header, Footer } from "~/components/global";
+import type { AppHeaderAndFooterMenuQuery, Menu } from "~/gql/types";
+import { Link } from "~/components/global/Link";
+import { useLocalization } from "~/hooks";
 
 export function Layout({ data, children }: Props) {
   const { pathname } = useLocation();
+  const { state } = useLocalization();
 
   const shopName = data ? data.shop.name : "Remix 📀 Demo Store";
 
@@ -36,11 +37,7 @@ export function Layout({ data, children }: Props) {
 
         <Header title={shopName} menu={headerMenu} />
 
-        <main
-          role="main"
-          id="main-content"
-          className={`flex-grow ${isHome(pathname, CountryCode.Pt) ? "-mt-nav" : ""}`}
-        >
+        <main role="main" id="main-content" className={`flex-grow ${isHome(pathname, state.country) ? "-mt-nav" : ""}`}>
           {children}
         </main>
       </div>
@@ -51,6 +48,6 @@ export function Layout({ data, children }: Props) {
 }
 
 type Props = {
-  data: LayoutQuery;
+  data: AppHeaderAndFooterMenuQuery;
   children: React.ReactNode;
 };

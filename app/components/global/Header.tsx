@@ -2,31 +2,26 @@ import {
   SunIcon,
   MoonIcon,
   UserIcon,
-  Bars2Icon,
+  Bars3Icon,
   ShoppingBagIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
 import { useWindowScroll } from "react-use";
 
-// import { useSettings } from "~/contexts";
 import type { EnhancedMenu } from "~/lib/utils";
-import { useLocation } from "react-router-dom";
 import useDrawer from "~/hooks/use-drawer";
 import { MenuDrawer, CartDrawer } from "~/components/global";
 import { useCart } from "@shopify/storefront-kit-react";
 import { Input, Badge, Button, Heading, Spinner, Indicator } from "~/components/elements";
-import { Link } from "@remix-run/react";
 import { Swap } from "~/components/elements/Swap";
-import { getCountryCode } from "~/utilities";
+import React from "react";
+import { Link } from "~/components/global/Link";
+import { useLocalization } from "~/hooks";
 
 /**
  * A client component that specifies the content of the header on the website
  */
 export function Header({ title, menu }: HeaderProps) {
-  const { pathname } = useLocation();
-
-  const countryCode = getCountryCode(pathname);
-
   const { isOpen: isCartOpen, openDrawer: openCart, closeDrawer: closeCart } = useDrawer();
 
   const { isOpen: isMenuOpen, openDrawer: openMenu, closeDrawer: closeMenu } = useDrawer();
@@ -35,13 +30,13 @@ export function Header({ title, menu }: HeaderProps) {
     <>
       <CartDrawer isOpen={isCartOpen} onClose={closeCart} />
       <MenuDrawer isOpen={isMenuOpen} onClose={closeMenu} menu={menu!} />
-      <DesktopHeader menu={menu} title={title} openCart={openCart} countryCode={countryCode} />
-      <MobileHeader title={title} openCart={openCart} openMenu={openMenu} countryCode={countryCode} />
+      <DesktopHeader menu={menu} title={title} openCart={openCart} />
+      <MobileHeader title={title} openCart={openCart} openMenu={openMenu} />
     </>
   );
 }
 
-function MobileHeader({ title, openCart, openMenu, countryCode }: MobileHeaderProps) {
+function MobileHeader({ title, openCart, openMenu }: MobileHeaderProps) {
   const { y } = useWindowScroll();
   const { status, totalQuantity } = useCart();
 
@@ -60,13 +55,10 @@ function MobileHeader({ title, openCart, openMenu, countryCode }: MobileHeaderPr
     <header role="banner" className={styles.header}>
       <div className={styles.section.left}>
         <Button size="sm" color="ghost" shape="circle" onClick={openMenu} animation>
-          <Bars2Icon className="h-4 w-4" />
+          <Bars3Icon className="h-4 w-4" />
         </Button>
 
-        <form
-          className="items-center gap-4 outline-0 sm:flex"
-          action={`/${countryCode ? countryCode + "/" : ""}search`}
-        >
+        <form className="items-center gap-4 outline-0 sm:flex" action="/search">
           <Button size="sm" type="submit" color="ghost" shape="circle" animation>
             <MagnifyingGlassIcon className="h-4 w-4" />
           </Button>
@@ -107,9 +99,11 @@ function MobileHeader({ title, openCart, openMenu, countryCode }: MobileHeaderPr
   );
 }
 
-function DesktopHeader({ menu, title, openCart, countryCode }: DesktopHeaderProps) {
+function DesktopHeader({ menu, title, openCart }: DesktopHeaderProps) {
   const { y } = useWindowScroll();
+  const { getRelativePath } = useLocalization();
   const { status, totalQuantity } = useCart();
+
   // const { themeMode, onToggleMode } = useSettings();
 
   const styles = {
@@ -138,7 +132,7 @@ function DesktopHeader({ menu, title, openCart, countryCode }: DesktopHeaderProp
         </nav>
       </div>
       <div className={styles.section.right}>
-        <form className="flex items-center gap-3 outline-0" action={`/${countryCode ? countryCode + "/" : ""}search`}>
+        <form className="flex items-center gap-3 outline-0" action={getRelativePath("/search")}>
           <Input name="q" size="sm" type="search" placeholder="Search" className="bg-transparent" />
           <Button size="sm" type="submit" color="ghost" shape="circle" className="ml-1">
             <MagnifyingGlassIcon className="h-4 w-4" />
@@ -196,12 +190,10 @@ type MobileHeaderProps = {
   title: string;
   openCart: () => void;
   openMenu: () => void;
-  countryCode?: string | null;
 };
 
 type DesktopHeaderProps = {
   menu?: EnhancedMenu;
   title: string;
   openCart: () => void;
-  countryCode?: string | null;
 };

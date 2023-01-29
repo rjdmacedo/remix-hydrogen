@@ -1,6 +1,6 @@
-import { Image, Money, useMoney, flattenConnection } from "@shopify/storefront-kit-react";
 import clsx from "clsx";
-import { Link } from "@remix-run/react";
+import { Link } from "~/components/global";
+import { Image, Money, useMoney, flattenConnection } from "@shopify/storefront-kit-react";
 
 import { Text, Badge } from "~/components/elements";
 import { isDiscounted, isNewArrival, getProductPlaceholder } from "~/lib";

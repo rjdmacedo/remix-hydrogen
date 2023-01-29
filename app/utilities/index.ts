@@ -4,9 +4,10 @@ import type { ReactNode, ReactElement } from "react";
 import { Fragment, cloneElement, isValidElement } from "react";
 
 import type { CountryCode } from "~/gql/types";
+import { useLocalization } from "~/hooks";
 
 export const isNavigation = (navigation: Navigation) => ({
-  reloading: navigation.state === "loading" && navigation.formData == null,
+  loading: navigation.state === "loading" && navigation.formData == null,
   reloading:
     navigation.state === "loading" &&
     navigation.formData != null &&
@@ -28,11 +29,14 @@ export const isReactComponent = (component: unknown): component is ReactNode =>
   isClassComponent(component) || isFunctionComponent(component);
 
 export const isHome = (pathname: string, countryCode?: CountryCode) =>
-  pathname === `/${countryCode ? countryCode + "/" : ""}`;
+  pathname === `/${countryCode ? countryCode.toLowerCase() : ""}`;
 
-export const getCountryCode = (pathname: string) => {
+export const getCountryCode = (request: Request) => {
+  if (!request.url) return;
+
+  const pathname = new URL(request.url).pathname;
   const localeMatch = /^\/([a-z]{2})(\/|$)/i.exec(pathname);
-  return localeMatch ? (localeMatch[1] as CountryCode) : undefined;
+  return localeMatch ? (localeMatch[1].toUpperCase() as CountryCode) : undefined;
 };
 
 const getData = (value?: string) => {

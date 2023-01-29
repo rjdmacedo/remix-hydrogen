@@ -13,27 +13,22 @@ import { Text, Heading, Section } from "~/components/elements";
 import { ProductDetail, ProductForm, ProductGallery } from "~/components/product";
 import type { Product, MediaImage, ProductConnection } from "~/gql/types";
 import { ProductIdDocument, ProductWithRecommendationsDocument } from "~/gql/types";
+import { getProductId, getProductWithRecommendations } from "~/api/products.server";
 
 export async function loader({ params, request }: LoaderArgs) {
   invariant(params.handle, "product handle not found");
 
-  const { product } = await client.request({
-    document: ProductIdDocument,
-    variables: {
-      handle: params.handle,
-      country: getCountryCode(request.url),
-    },
+  const { product } = await getProductId({
+    handle: params.handle,
+    country: getCountryCode(request),
   });
 
   invariant(product, "Product not found");
 
-  const data = await client.request({
-    document: ProductWithRecommendationsDocument,
-    variables: {
-      id: product.id,
-      count: 12,
-      country: getCountryCode(request.url),
-    },
+  const data = await getProductWithRecommendations({
+    id: product.id,
+    count: 12,
+    country: getCountryCode(request),
   });
 
   return json(data);

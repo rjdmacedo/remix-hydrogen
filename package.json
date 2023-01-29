@@ -59,6 +59,7 @@
     "framer-motion": "^8.5.2",
     "graphql": "^16.6.0",
     "graphql-request": "^5.1.0",
+    "immer": "^9.0.18",
     "isbot": "^3.6.5",
     "lodash": "^4.17.21",
     "morgan": "^1.10.0",

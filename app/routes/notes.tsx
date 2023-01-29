@@ -4,7 +4,7 @@ import { Form, Link, NavLink, Outlet, useLoaderData } from "@remix-run/react";
 
 import { getNoteListItems } from "~/models/note.server";
 import { requireCustomerAccessToken } from "~/session.server";
-import { useUser } from "~/utils";
+import { Button } from "~/components/elements";
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await requireCustomerAccessToken(request);
@@ -13,7 +13,6 @@ export async function loader({ request }: LoaderArgs) {
 }
 
 export default function NotesPage() {
-  const user = useUser();
   const data = useLoaderData<typeof loader>();
 
   return (
@@ -22,14 +21,8 @@ export default function NotesPage() {
         <h1 className="text-3xl font-bold">
           <Link to=".">Notes</Link>
         </h1>
-        <p>{user.email}</p>
         <Form action="/logout" method="post">
-          <button
-            type="submit"
-            className="rounded bg-slate-600 py-2 px-4 text-blue-100 hover:bg-blue-500 active:bg-blue-600"
-          >
-            Logout
-          </button>
+          <Button type="submit">Logout</Button>
         </Form>
       </header>
 

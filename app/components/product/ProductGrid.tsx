@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react";
+import { Link } from "~/components/global";
 
 import { Grid } from "~/components/elements/Grid";
 import { ProductCard } from "./ProductCard";

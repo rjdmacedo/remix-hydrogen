@@ -1,7 +1,8 @@
-import { Link } from "@remix-run/react";
 import { Text } from "~/components/elements";
 import type { EnhancedMenu } from "~/lib/utils";
 import { Drawer } from "~/components/global/Drawer";
+import React from "react";
+import { Link } from "~/components/global/Link";
 
 export function MenuDrawer({ menu, isOpen, onClose }: MenuDrawerProps) {
   return (
@@ -14,7 +15,6 @@ export function MenuDrawer({ menu, isOpen, onClose }: MenuDrawerProps) {
 function MenuMobileNav({ menu, onClose }: MenuMobileNavProps) {
   return (
     <nav className="grid gap-4 p-6 sm:gap-6 sm:px-12 sm:py-8">
-      {/* Top level menu items */}
       {(menu?.items || []).map((item) => (
         <Link key={item.id} to={item.to} target={item.target} onClick={onClose}>
           <Text as="span" size="copy">

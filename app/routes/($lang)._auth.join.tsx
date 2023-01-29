@@ -4,18 +4,16 @@ import { json, redirect } from "@remix-run/node";
 import type { ActionArgs, LoaderArgs, MetaFunction } from "@remix-run/node";
 import { Form, useActionData, useNavigation, useSearchParams } from "@remix-run/react";
 
-import client from "~/api/index.server";
 import { isNavigation } from "~/utilities";
-import { getApiErrorMessage } from "~/lib";
 import { Button, Input, Text } from "~/components/elements";
 import { safeRedirect, validateEmail } from "~/utils";
-import { LoginDocument, RegisterDocument } from "~/gql/types";
 import { createUserSession, getUserAccessToken } from "~/session.server";
+import { createCustomerAccessToken, customerCreate } from "~/api/customer.server";
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserAccessToken(request);
   if (userId) return redirect("/");
-  return json({});
+  return json(null);
 }
 
 export async function action({ request }: ActionArgs) {
@@ -36,53 +34,19 @@ export async function action({ request }: ActionArgs) {
     return json({ errors: { email: null, password: "Password is too short" } }, { status: 400 });
   }
 
-  const registerData = await client.request({
-    document: RegisterDocument,
-    variables: {
-      input: {
-        email,
-        password,
-        acceptsMarketing: false,
-      },
-    },
-  });
+  const { error: registerError } = await customerCreate({ email, password });
 
-  const registerErrorMessage = getApiErrorMessage(
-    "customerCreate",
-    registerData,
-    registerData.customerCreate?.customerUserErrors
-  );
-
-  if (registerErrorMessage) {
-    return json(
-      { errors: { email: registerErrorMessage.message ?? "Unknown error", password: null } },
-      { status: 401 }
-    );
+  if (registerError) {
+    return json({ errors: { email: registerError.message ?? "Unknown error", password: null } }, { status: 401 });
   }
 
-  const loginData = await client.request({
-    document: LoginDocument,
-    variables: {
-      input: {
-        email,
-        password,
-      },
-    },
-  });
+  const { data, error: loginError } = await createCustomerAccessToken({ email, password });
 
-  const loginErrorMessage = getApiErrorMessage(
-    "customerAccessTokenCreate",
-    loginData,
-    loginData.customerAccessTokenCreate?.customerUserErrors
-  );
-
-  if (loginErrorMessage) {
-    return json({ errors: { email: loginErrorMessage.message ?? "Unknown error", password: null } }, { status: 401 });
+  if (loginError) {
+    return json({ errors: { email: loginError.message ?? "Unknown error", password: null } }, { status: 401 });
   }
 
-  const { accessToken } = loginData?.customerAccessTokenCreate?.customerAccessToken || {};
-
-  if (!accessToken) {
+  if (!data) {
     return json({ errors: { email: "Invalid email or password", password: null } }, { status: 400 });
   }
 
@@ -90,7 +54,7 @@ export async function action({ request }: ActionArgs) {
     request,
     remember: true,
     redirectTo,
-    accessToken,
+    accessToken: data.accessToken,
   });
 }
 

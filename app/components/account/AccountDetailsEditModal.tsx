@@ -1,55 +1,41 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Form, useActionData, useNavigation } from "@remix-run/react";
+import { useFetcher } from "@remix-run/react";
 
 import { Modal } from "~/components/global";
 import { isArray } from "lodash";
-import type { action } from "~/routes/_nav.account";
-import { isNavigation } from "~/utilities";
-import { Text, Button, Input, Alert } from "~/components/elements";
+import { Text, Button, Input } from "~/components/elements";
+import { AnimatePresence, motion } from "framer-motion";
 
 export function AccountDetailsEditModal({
-  email,
   phone,
+  email,
   isOpen,
   onClose,
   lastName,
   firstName,
 }: AccountDetailsEditModalProps) {
-  const navigation = useNavigation();
-  const actionData = useActionData<typeof action>();
-  const { submitting } = isNavigation(navigation);
+  const account = useFetcher();
 
-  const isUpdating = submitting && navigation.formData?.get("_action") === "update";
-
-  const formRef = useRef<HTMLFormElement>(null);
-  const emailRef = useRef<HTMLInputElement>(null);
-  const phoneRef = useRef<HTMLInputElement>(null);
-
-  const [emailHasError, setEmailHasError] = useState(false);
-  const [phoneHasError, setPhoneHasError] = useState(false);
-
-  const didError = emailHasError || phoneHasError;
-
-  const clearErrors = () => {
-    setEmailHasError(false);
-    setPhoneHasError(false);
+  const variants = {
+    open: { opacity: 1, x: 0 },
+    closed: { opacity: 0, x: "-100%" },
   };
 
   useEffect(() => {
-    if (!isOpen) {
+    if (isOpen) {
       clearErrors();
       formRef.current?.reset();
     }
   }, [isOpen]);
 
   useEffect(() => {
-    if (actionData?.error === null) {
-      clearErrors();
+    if (account.data?.error === null) {
       onClose();
     }
 
-    if (isArray(actionData?.error?.field)) {
-      const field = actionData?.error?.field[1] || "";
+    clearErrors();
+    if (isArray(account.data?.error?.field)) {
+      const field = account.data?.error?.field[1] || "";
       switch (field) {
         case "email":
           emailRef.current?.focus();
@@ -63,7 +49,21 @@ export function AccountDetailsEditModal({
           break;
       }
     }
-  }, [actionData, onClose]);
+  }, [account.data, onClose]);
+
+  const isUpdating = account.submission?.formData?.get("_action") === "update";
+
+  const formRef = useRef<HTMLFormElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const phoneRef = useRef<HTMLInputElement>(null);
+
+  const [emailHasError, setEmailHasError] = useState(false);
+  const [phoneHasError, setPhoneHasError] = useState(false);
+
+  const clearErrors = () => {
+    setEmailHasError(false);
+    setPhoneHasError(false);
+  };
 
   const handleFormChange = (event: any) => {
     event.stopPropagation();
@@ -83,75 +83,85 @@ export function AccountDetailsEditModal({
 
   return (
     <Modal onClose={onClose} isOpen={isOpen} title="Update your profile">
-      <Form ref={formRef} method="post" className="flex flex-col gap-4" replace onChange={handleFormChange}>
-        {didError && (
-          <Alert status="error">
-            <Text size="sm">{actionData?.error?.message}</Text>
-          </Alert>
-        )}
+      <account.Form ref={formRef} method="post" action="/account" replace onChange={handleFormChange}>
+        <fieldset className="flex flex-col gap-3" disabled={isUpdating}>
+          <Input
+            id="firstname"
+            name="firstName"
+            type="text"
+            label="First Name"
+            aria-label="First name"
+            placeholder="First name"
+            autoComplete="given-name"
+            defaultValue={firstName}
+          />
 
-        <Input
-          id="firstname"
-          name="firstName"
-          type="text"
-          defaultValue={firstName}
-          label="First name"
-          aria-label="First name"
-          placeholder="First name"
-          autoComplete="given-name"
-        />
+          <Input
+            id="lastname"
+            name="lastName"
+            type="text"
+            label="Last name"
+            aria-label="Last Name"
+            autoComplete="family-name"
+            placeholder="Last name"
+            defaultValue={lastName}
+          />
 
-        <Input
-          id="lastname"
-          name="lastName"
-          type="text"
-          defaultValue={lastName}
-          label="Last name"
-          aria-label="Last name"
-          autoComplete="family-name"
-          placeholder="Last name"
-        />
+          <Input
+            id="phone"
+            ref={phoneRef}
+            name="phone"
+            type="tel"
+            label="Phone"
+            color={phoneHasError ? "error" : undefined}
+            aria-label="Phone"
+            autoComplete="tel"
+            placeholder="Phone"
+            defaultValue={phone}
+          />
+          <AnimatePresence>
+            <motion.div variants={variants} animate={phoneHasError ? "open" : "closed"}>
+              <Text color="error" size="fine" className="absolute -top-1">
+                {phoneHasError && account.data?.error?.message}
+              </Text>
+            </motion.div>
+          </AnimatePresence>
 
-        <Input
-          id="phone"
-          ref={phoneRef}
-          name="phone"
-          type="tel"
-          label="Mobile"
-          color={phoneHasError ? "error" : undefined}
-          aria-label="Mobile"
-          defaultValue={phone}
-          autoComplete="tel"
-          placeholder="Mobile"
-        />
+          <Input
+            id="email"
+            ref={emailRef}
+            name="email"
+            type="email"
+            color={emailHasError ? "error" : undefined}
+            label="Email Address"
+            aria-label="Email address"
+            placeholder="Email address"
+            defaultValue={email}
+            autoComplete="email"
+          />
+          <AnimatePresence>
+            <motion.div variants={variants} animate={emailHasError ? "open" : "closed"}>
+              <Text color="error" size="fine" className="absolute -top-1">
+                {emailHasError && account.data?.error?.message}
+              </Text>
+            </motion.div>
+          </AnimatePresence>
 
-        <Input
-          id="email"
-          ref={emailRef}
-          name="email"
-          type="email"
-          color={emailHasError ? "error" : undefined}
-          defaultValue={email}
-          label="Email Address"
-          aria-label="Email address"
-          placeholder="Email address"
-          autoComplete="email"
-        />
+          <Text as="h3" size="lead" className="my-3">
+            Change your password
+          </Text>
 
-        <Text as="h3" size="lead">
-          Change your password
-        </Text>
-        <Password name="currentPassword" label="Current password" />
-        <Password name="newPassword" label="New password" />
-        <Password name="newPassword2" label="Re-enter new password" />
+          <Password name="currentPassword" label="Current password" />
+          <Password name="newPassword" label="New password" />
 
-        <Button type="submit" color="primary" name="_action" value="update" loading={isUpdating} disabled={isUpdating}>
-          {isUpdating ? "Saving..." : "Save"}
-        </Button>
-        <Button type="reset" color="ghost" onClick={onClose} className="text-sm" disabled={isUpdating}>
-          Cancel
-        </Button>
-      </Form>
+          <Button type="submit" color="primary" name="_action" value="update" loading={isUpdating}>
+            {isUpdating ? "Saving..." : "Save"}
+          </Button>
+          <Button type="reset" color="ghost" onClick={onClose} className="text-sm">
+            Cancel
+          </Button>
+        </fieldset>
+      </account.Form>
     </Modal>
   );
 }
@@ -162,6 +172,7 @@ function Password({ name, required = false, label }: PasswordProps) {
       id={name}
       name={name}
       type="password"
+      label={label}
       required={required}
       minLength={8}
       aria-label={label}

@@ -36,9 +36,9 @@ export function Text({
   };
 
   const widths: Record<string, string> = {
-    default: "max-w-prose",
-    narrow: "max-w-prose-narrow",
     wide: "max-w-prose-wide",
+    narrow: "max-w-prose-narrow",
+    default: "max-w-prose",
   };
 
   const styles = clsx(

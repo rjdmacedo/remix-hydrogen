@@ -1,3 +1,28 @@
+query AllProducts(
+    $pageBy: Int!
+    $cursor: String
+    $country: CountryCode
+    $language: LanguageCode
+    $filters: [ProductFilter!]!
+    $collectionName: String!
+) @inContext(country: $country, language: $language) {
+    collection(handle: $collectionName) {
+        products(first: $pageBy, after: $cursor, filters: $filters) {
+            nodes {
+                ...ProductCard
+            }
+            filters {
+                ...Filters
+            }
+            pageInfo {
+                endCursor
+                hasNextPage
+                startCursor
+            }
+        }
+    }
+}
+
 query ProductId($handle: String!, $country: CountryCode, $language: LanguageCode) @inContext(country: $country, language: $language) {
     product(handle: $handle) {
         id
@@ -69,4 +94,26 @@ query ProductWithRecommendations($id: ID!, $count: Int, $country: CountryCode, $
     recommended: productRecommendations(productId: $id) {
         ...ProductCard
     }
+}
+
+query FeaturedProductsAndCollections($country: CountryCode, $language: LanguageCode) @inContext(country: $country, language: $language) {
+    featuredProducts: products(first: 12) {
+        nodes {
+            ...ProductCard
+        }
+    }
+    featuredCollections: collections(first: 3, sortKey: UPDATED_AT) {
+        nodes {
+            id
+            title
+            handle
+            image {
+                altText
+                width
+                height
+                url
+            }
+        }
+    }
+
 }

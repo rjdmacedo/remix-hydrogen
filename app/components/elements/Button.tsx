@@ -3,7 +3,7 @@ import clsx from "clsx";
 import type { ReactNode } from "react";
 import React, { forwardRef } from "react";
 import type { LinkProps } from "@remix-run/react";
-import { Link } from "@remix-run/react";
+import { Link } from "~/components/global";
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (

@@ -2,7 +2,7 @@ import { statusMessage } from "~/lib/utils";
 import { Heading, Text } from "~/components/elements";
 import { Image, flattenConnection } from "@shopify/storefront-kit-react";
 import type { Order, OrderLineItemConnection } from "~/gql/types";
-import { Link } from "@remix-run/react";
+import { Link } from "~/components/global";
 
 export function OrderCard({ order }: OrderCardProps) {
   if (!order?.id) return null;

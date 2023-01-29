@@ -1,21 +1,11 @@
 import { Disclosure, Transition } from "@headlessui/react";
-import { Link } from "@remix-run/react";
+import { Link } from "~/components/global";
 import { Text } from "~/components/elements/Text";
 import { IconClose } from "../elements/Icon";
 
-export function ProductDetail({
-  title,
-  content,
-  learnMore,
-  defaultOpen = false,
-}: ProductDetailProps) {
+export function ProductDetail({ title, content, learnMore, defaultOpen = false }: ProductDetailProps) {
   return (
-    <Disclosure
-      key={title}
-      as="div"
-      className="grid w-full gap-2"
-      defaultOpen={defaultOpen}
-    >
+    <Disclosure key={title} as="div" className="grid w-full gap-2" defaultOpen={defaultOpen}>
       {({ open }) => (
         <>
           <Disclosure.Button className="text-left">
@@ -24,9 +14,7 @@ export function ProductDetail({
                 {title}
               </Text>
               <IconClose
-                className={`${
-                  open ? "" : "rotate-[45deg]"
-                } transform-gpu transition-transform duration-200`}
+                className={`${open ? "" : "rotate-[45deg]"} transform-gpu transition-transform duration-200`}
               />
             </div>
           </Disclosure.Button>
@@ -42,10 +30,7 @@ export function ProductDetail({
             <Disclosure.Panel className={"grid gap-2 pb-4 pt-2"}>
               <Text as="div">{content}</Text>
               {learnMore && (
-                <Link
-                  to={learnMore}
-                  className="border-primary text-primary border-b pb-px"
-                >
+                <Link to={learnMore} className="border-b border-primary pb-px text-primary">
                   Learn more
                 </Link>
               )}

@@ -2,7 +2,7 @@ import { Disclosure } from "@headlessui/react";
 
 import type { EnhancedMenu, EnhancedMenuItem } from "~/lib/utils";
 import { Heading, IconCaret } from "~/components/elements";
-import { Link } from "@remix-run/react";
+import { Link } from "~/components/global";
 
 /**
  * A server component that specifies the content of the footer on the website
@@ -39,11 +39,7 @@ export function FooterMenu({ menu }: { menu?: EnhancedMenu }) {
                     <Disclosure.Panel static>
                       <nav className={styles.nav}>
                         {item.items.map((subItem) => (
-                          <Link
-                            key={subItem.id}
-                            to={subItem.to}
-                            target={subItem.target}
-                          >
+                          <Link key={subItem.id} to={subItem.to} target={subItem.target}>
                             {subItem.title}
                           </Link>
                         ))}

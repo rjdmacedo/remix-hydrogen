@@ -4,12 +4,11 @@ import { json, redirect } from "@remix-run/node";
 import type { ActionArgs, LoaderArgs, MetaFunction } from "@remix-run/node";
 import { Form, useActionData, useNavigation, useSearchParams } from "@remix-run/react";
 
-import client from "~/api/index.server";
 import { isNavigation } from "~/utilities";
-import { LoginDocument } from "~/gql/types";
 import { safeRedirect, validateEmail } from "~/utils";
 import { Button, Input, Text, Checkbox } from "~/components/elements";
 import { createUserSession, getUserAccessToken } from "~/session.server";
+import { createCustomerAccessToken } from "~/api/customer.server";
 
 export async function loader({ request }: LoaderArgs) {
   const userAccessToken = await getUserAccessToken(request);
@@ -36,27 +35,17 @@ export async function action({ request }: ActionArgs) {
     return json({ errors: { password: "Password is too short", email: null } }, { status: 400 });
   }
 
-  const { customerAccessTokenCreate } = await client.request({
-    document: LoginDocument,
-    variables: {
-      input: {
-        email,
-        password,
-      },
-    },
-  });
+  const { data, error } = await createCustomerAccessToken({ email, password });
 
-  const { accessToken } = customerAccessTokenCreate?.customerAccessToken || {};
-
-  if (!accessToken) {
-    return json({ errors: { email: "Invalid email or password", password: null } }, { status: 400 });
+  if (error || !data) {
+    return json({ errors: { email: error?.message ?? "Unknown error", password: null } }, { status: 401 });
   }
 
   return createUserSession({
     request,
     remember: remember === "on",
     redirectTo,
-    accessToken,
+    accessToken: data.accessToken,
   });
 }
 
